@@ -151,8 +151,13 @@ import ExcelJS from 'exceljs';
 export const downloadApplicantsExcel = async (req, res) => {
   try {
     const jobId = req.params.jobId;
+    const userId = req.user;
     const job = await Job.findById(jobId).populate('company');
     if (!job) return res.status(404).json({ message: "Job not found", success: false });
+
+    // Check if requester is admin (to show consent form)
+    const requester = await User.findById(userId);
+    const isAdmin = requester.role === 'admin';
 
     const applications = await Application.find({ job: jobId }).populate({
       path: 'applicant',
@@ -176,12 +181,17 @@ export const downloadApplicantsExcel = async (req, res) => {
     }
 
     worksheet.addRow([`Applicants for ${job.title} at ${companyName}`]);
-    worksheet.mergeCells('A1:J1');
+    worksheet.mergeCells('A1:L1'); // Expanded merge for more columns
     worksheet.getRow(1).font = { bold: true, size: 16 };
     worksheet.getRow(1).alignment = { horizontal: 'center' };
 
     // Headers
-    worksheet.addRow(['PRN', 'Name', 'Email', 'Phone', 'Status', 'Branch', '10th %', '12th %', 'Bachelor %', 'Master %']);
+    const headers = ['PRN', 'Name', 'Email', 'Phone', 'Status', 'Branch', '10th %', '12th %', 'Bachelor %', 'Master %', 'Resume Link'];
+    if (isAdmin) {
+      headers.push('Consent Form Link');
+    }
+
+    worksheet.addRow(headers);
     const headerRow = worksheet.getRow(2);
     headerRow.font = { bold: true };
     headerRow.eachCell((cell) => {
@@ -199,7 +209,10 @@ export const downloadApplicantsExcel = async (req, res) => {
       const profile = student.profile || {};
       const education = profile.education || {};
 
-      worksheet.addRow([
+      const resumeLink = app.resumeUrl ? { text: 'View Resume', hyperlink: `http://localhost:8000/${app.resumeUrl}` } : 'N/A';
+      const consentLink = app.consentFormUrl ? { text: 'View Consent', hyperlink: `http://localhost:8000/${app.consentFormUrl}` } : 'N/A';
+
+      const rowData = [
         profile.prn || 'N/A',
         student.name,
         student.email,
@@ -209,18 +222,123 @@ export const downloadApplicantsExcel = async (req, res) => {
         education.tenthPercent || 'N/A',
         education.twelfthPercent || 'N/A',
         education.bachelorsPercent || 'N/A',
-        education.mastersPercent || 'N/A'
-      ]);
+        education.mastersPercent || 'N/A',
+        resumeLink
+      ];
+
+      if (isAdmin) {
+        rowData.push(consentLink);
+      }
+
+      worksheet.addRow(rowData);
     });
 
     // adjust column widths
-    worksheet.columns = [
+    const colWidths = [
       { width: 15 }, { width: 25 }, { width: 30 }, { width: 15 }, { width: 15 }, { width: 20 },
-      { width: 10 }, { width: 10 }, { width: 15 }, { width: 15 }
+      { width: 10 }, { width: 10 }, { width: 15 }, { width: 15 }, { width: 15 }
     ];
+    if (isAdmin) {
+      colWidths.push({ width: 15 });
+    }
+    worksheet.columns = colWidths;
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename=applicants-${jobId}.xlsx`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error", success: false });
+  }
+}
+
+export const downloadAttendanceSheet = async (req, res) => {
+  try {
+    const jobId = req.params.jobId;
+    const job = await Job.findById(jobId).populate('company');
+    if (!job) return res.status(404).json({ message: "Job not found", success: false });
+
+    // Check if requester is admin - STRICTLY ADMIN ONLY
+    const userId = req.user;
+    const requester = await User.findById(userId);
+    if (requester.role !== 'admin') {
+      return res.status(403).json({ message: "Access denied. Admins only.", success: false });
+    }
+
+    const applications = await Application.find({ job: jobId }).populate({
+      path: 'applicant',
+      select: 'name profile'
+    });
+
+    //Sort by PRN
+    applications.sort((a, b) => {
+      const prnA = a.applicant.profile?.prn || '';
+      const prnB = b.applicant.profile?.prn || '';
+      return prnA.localeCompare(prnB);
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Attendance');
+
+    // Company Name Row
+    let companyName = 'Unknown Company';
+    if (job.company && typeof job.company === 'object') {
+      companyName = job.company.name;
+    }
+
+    worksheet.addRow([`${companyName} - Attendance Sheet`]);
+    worksheet.mergeCells('A1:C1');
+    worksheet.getRow(1).font = { bold: true, size: 18 };
+    worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+    worksheet.getRow(1).height = 40;
+
+    // Headers
+    worksheet.addRow(['PRN', 'Candidate Name', 'Signature']);
+    const headerRow = worksheet.getRow(2);
+    headerRow.font = { bold: true, size: 12 };
+    headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+    headerRow.height = 25;
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFDDDDDD' }
+      };
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'medium' }, right: { style: 'thin' } };
+    });
+
+    // Data
+    applications.forEach((app, index) => {
+      const student = app.applicant;
+      const profile = student.profile || {};
+
+      const row = worksheet.addRow([
+        profile.prn || 'N/A',
+        student.name,
+        '' // Empty signature column
+      ]);
+
+      // Style the data rows
+      row.height = 30; // More height for signature
+      row.alignment = { vertical: 'middle' };
+      row.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' }; // Center PRN
+
+      // Add borders
+      row.eachCell((cell) => {
+        cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+      });
+    });
+
+    // Column widths
+    worksheet.getColumn(1).width = 20; // PRN
+    worksheet.getColumn(2).width = 40; // Name
+    worksheet.getColumn(3).width = 30; // Signature
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=attendance-${jobId}.xlsx`);
 
     await workbook.xlsx.write(res);
     res.end();
