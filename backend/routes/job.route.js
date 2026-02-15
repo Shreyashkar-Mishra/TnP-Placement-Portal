@@ -1,9 +1,10 @@
 import express from 'express';
 import isAuthenticated from '../middlewares/isAuthenticated.js';
+import { upload } from '../middlewares/multer.js';
 import { getAllJobs, postJob, getAdminJobs, getJobById, getCompanyJobs, getJobApplicants, updateJob, deleteJob } from '../controllers/job.controller.js';
 
 const router = express.Router();
-router.route("/register").post(isAuthenticated, postJob);
+router.route("/register").post(isAuthenticated, upload.single('consentForm'), postJob);
 router.route("/get").get(isAuthenticated, getAllJobs);
 router.route("/get/:id").get(isAuthenticated, getJobById);
 router.route("/getAdmin").get(isAuthenticated, getAdminJobs);
