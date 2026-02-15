@@ -45,10 +45,13 @@ export const sendOtp = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    const { name, email, phoneNumber, password, role, otp } = req.body;
+    const { name, email, phoneNumber, password, role, otp, college } = req.body;
 
     if (!name || !email || !phoneNumber || !password || !role || !otp) {
       return res.status(400).json({ message: 'All required fields including OTP must be filled', success: false });
+    }
+    if (role === 'student' && !college) {
+      return res.status(400).json({ message: 'College is required for students', success: false });
     }
 
     // Verify OTP
@@ -87,6 +90,7 @@ export const register = async (req, res) => {
       phoneNumber,
       password: hashedPassword,
       roles: [role],
+      college: role === 'student' ? college : undefined,
       company: companyId,
       isApproved
     });
@@ -142,7 +146,8 @@ export const login = async (req, res) => {
       name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
-      roles: user.roles
+      roles: user.roles,
+      college: user.college
     }
     return res.status(200).cookie('token', token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' }).json({ message: 'Login succesful', success: true, user: user });
 
@@ -160,15 +165,16 @@ export const logout = async (req, res) => {
   }
 }
 export const updateProfile = async (req, res) => {
-  // Update profile logic here
   try {
-    const file = req.file;
+    // Resume upload removed as per new requirements
     let { name, phoneNumber, email, profile } = req.body;
+
     if (typeof profile === 'string') {
       try {
         profile = JSON.parse(profile);
       } catch (e) {
         console.error("Error parsing profile JSON", e);
+        return res.status(400).json({ message: 'Invalid profile data format', success: false });
       }
     }
 
@@ -177,33 +183,73 @@ export const updateProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found', success: false });
     }
+
+    // Role-specific validation for students
+    if (user.roles.includes('student')) {
+      const edu = profile?.education || {};
+
+      // Mandatory fields check
+      if (!edu.branch || !edu.tenthPercent || !edu.twelfthPercent || !edu.bachelorsPercent) {
+        return res.status(400).json({ message: 'Branch, 10th%, 12th%, and Bachelors% are mandatory.', success: false });
+      }
+
+      // Master's validation: Either Percent OR CGPA required
+      // Note: Logic assumes if they reached Master's section they must fill it. 
+      // If Master's is optional generally but mandatory if filling, that's different. 
+      // User request: "make the fields of Branch,10th %,12th %,Bachelor's % and Master's % mandatory" 
+      // This implies every student MUST have a Master's degree?? 
+      // "allow students to give CGPA as well in MCA , if Master's percentage not known"
+      // This suggests it's mandatory. I will enforce it.
+
+      // Master's validation: Either Percent OR CGPA required
+      if (!edu.mastersPercent && !edu.mastersCGPA) {
+        return res.status(400).json({ message: "Master's Percentage or CGPA is required.", success: false });
+      }
+
+      // CGPA to Percentage Conversion (if CGPA provided and Percent not)
+      // OR always overwrite percent if CGPA is provided? User said "whatever cgpa student enters multiply it by 9.5 and store it"
+      // Let's ensure if mastersCGPA is present, we calculate mastersPercent = mastersCGPA * 9.5
+      if (edu.mastersCGPA) {
+        edu.mastersPercent = edu.mastersCGPA * 9.5;
+      }
+    }
+
     if (name) user.name = name;
     if (email) user.email = email;
     if (phoneNumber) user.phoneNumber = phoneNumber;
     if (profile) {
       user.profile = {
         ...user.profile,
-        ...profile
+        ...profile,
+        education: {
+          ...user.profile?.education,
+          ...profile.education,
+          // Explicitly save activeBacklogs if provided at top level of profile or inside education?
+          // Schema has activeBacklogs inside profile.education
+          activeBacklogs: profile.education?.activeBacklogs !== undefined ? profile.education.activeBacklogs : user.profile?.education?.activeBacklogs
+        }
       };
-    }
 
-    // Handle Resume Update
-    if (file) {
-      user.profile.resume = file.path; // Or construct URL if using static serve: `http://localhost:8000/${file.path}`
-      user.profile.resumeOriginalName = file.originalname;
+      // Explicitly remove resume fields if they exist to clean up
+      if (user.profile.resume) user.profile.resume = undefined;
+      if (user.profile.resumeOriginalName) user.profile.resumeOriginalName = undefined;
     }
 
     await user.save();
+
+    // Return updated user without resume info
     const updatedUser = {
       id: user._id,
       name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
       roles: user.roles,
+      college: user.college,
       profile: user.profile
     }
     return res.status(200).json({ message: 'Profile updated successfully', success: true, user: updatedUser });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: error.message, success: false });
   }
 
@@ -251,6 +297,38 @@ export const getUserProfile = async (req, res) => {
     if (!userObj.profile) userObj.profile = {};
 
     return res.status(200).json({ success: true, user: userObj });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, success: false });
+  }
+};
+
+export const getAllStudents = async (req, res) => {
+  try {
+    const students = await User.find({ roles: 'student' }).select('-password');
+    return res.status(200).json({ success: true, students });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, success: false });
+  }
+};
+
+export const updateUserRole = async (req, res) => {
+  try {
+    const { userId, role } = req.body;
+    if (!userId || !role) {
+      return res.status(400).json({ message: "UserId and Role are required", success: false });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found", success: false });
+    }
+
+    if (!user.roles.includes(role)) {
+      user.roles.push(role);
+      await user.save();
+    }
+
+    return res.status(200).json({ message: "User role updated successfully", success: true });
   } catch (error) {
     return res.status(500).json({ message: error.message, success: false });
   }
