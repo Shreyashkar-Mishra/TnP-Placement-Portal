@@ -59,9 +59,11 @@ export const postJob = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized to post jobs.", success: false });
     }
 
+    const consentFormUrl = req.file ? req.file.path : "";
+
     if (
       !title || !description || !educationRequirements ||
-      !location || !salary || !position ||
+      !location || !salary ||
       !positionsAvailable || !applicationDeadline ||
       !jobType || !workMode
     ) {
@@ -74,12 +76,13 @@ export const postJob = async (req, res) => {
       educationRequirements,
       location,
       salary: Number(salary),
-      role: position,
+      role: position || 'Student',
       company: companyId,
       positionsAvailable,
       applicationDeadline,
       jobType,
       workMode,
+      consentFormUrl,
       createdBy: userId
     });
 
