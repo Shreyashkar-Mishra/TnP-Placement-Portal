@@ -1,7 +1,7 @@
 
 import { UserRole } from '../types';
 
-const BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const BASE_URL = 'http://localhost:8000/api/v1';
 
 // Helper to handle fetch with credentials (cookies)
 const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
@@ -211,7 +211,7 @@ export const ApplicationService = {
     // We cannot use fetchWithAuth directly because it expects JSON.
     // We need to handle blob response.
     try {
-      const response = await fetch(`${BASE_URL}/application/download-excel/${jobId}`, {
+      const response = await fetch(`http://localhost:8000/api/v1/application/download-excel/${jobId}`, {
         headers: {
           // 'Content-Type': 'application/json', // Do NOT set content type for download request
         },
@@ -236,7 +236,7 @@ export const ApplicationService = {
 
   downloadAttendanceSheet: async (jobId: string) => {
     try {
-      const response = await fetch(`${BASE_URL}/application/download-attendance/${jobId}`, {
+      const response = await fetch(`http://localhost:8000/api/v1/application/download-attendance/${jobId}`, {
         credentials: 'include'
       });
       if (response.ok) {
