@@ -5,6 +5,20 @@ export const applyJob = async (req, res) => {
   try {
     const jobId = req.params.id;
     const userId = req.user;
+
+    // File handling
+    let resumeUrl = "";
+    let consentFormUrl = "";
+
+    if (req.files) {
+      if (req.files.resume && req.files.resume[0]) {
+        resumeUrl = req.files.resume[0].path;
+      }
+      if (req.files.consentForm && req.files.consentForm[0]) {
+        consentFormUrl = req.files.consentForm[0].path;
+      }
+    }
+
     if (!jobId) {
       return res.status(400).json({ message: 'Job ID is required', success: false });
     }
@@ -47,7 +61,9 @@ export const applyJob = async (req, res) => {
     //create application
     const application = await Application.create({
       job: jobId,
-      applicant: userId
+      applicant: userId,
+      resumeUrl,
+      consentFormUrl
     });
 
     job.applications.push(application._id);
