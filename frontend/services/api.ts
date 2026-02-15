@@ -105,6 +105,17 @@ export const AuthService = {
         resolve({ success: true, message: 'If an account exists, a reset link has been sent.' });
       }, 1000);
     });
+  },
+
+  getAllStudents: async () => {
+    return fetchWithAuth('/user/admin/students');
+  },
+
+  updateUserRole: async (userId: string, role: string) => {
+    return fetchWithAuth('/user/admin/update-role', {
+      method: 'POST',
+      body: JSON.stringify({ userId, role })
+    });
   }
 };
 
@@ -128,7 +139,7 @@ export const JobService = {
   postJob: async (jobData: any) => {
     return fetchWithAuth('/job/register', {
       method: 'POST',
-      body: JSON.stringify(jobData),
+      body: jobData instanceof FormData ? jobData : JSON.stringify(jobData),
     });
   },
 
@@ -156,8 +167,28 @@ export const JobService = {
 
 export const ApplicationService = {
   // Backend: router.route("/apply/:id").get(isAuthenticated, applyJob);
-  applyJob: async (jobId: string) => {
-    return fetchWithAuth(`/application/apply/${jobId}`);
+  applyJob: async (jobIdOrData: string | FormData, jobIdIfData?: string) => {
+    try {
+      if (jobIdOrData instanceof FormData) {
+        const id = jobIdIfData;
+        const response = await fetchWithAuth(`/application/apply/${id}`, {
+          method: 'POST',
+          body: jobIdOrData
+        });
+        return response;
+      } else {
+        // For backward compatibility or if just applying without files (though backend now expects POST for apply)
+        // The backend route IS CHANGED to POST for apply/:id.
+        // So even simple apply needs POST.
+        // But simpler: The UI now ALWAYS uses FormData if applying via modal.
+        // If legacy calls exist, they might fail if they use GET. 
+        // Let's check backend route: router.route("/apply/:id").post(...)
+        // So we must use POST.
+        return fetchWithAuth(`/application/apply/${jobIdOrData}`, { method: 'POST' });
+      }
+    } catch (error: any) {
+      return { success: false, message: 'An error occurred' };
+    }
   },
 
   // Backend: router.route("/applied").get(isAuthenticated, getAppliedJobs);

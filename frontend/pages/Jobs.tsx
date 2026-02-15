@@ -12,6 +12,11 @@ export const Jobs: React.FC = () => {
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
+  const [jobToApply, setJobToApply] = useState<Job | null>(null);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [signedConsentFile, setSignedConsentFile] = useState<File | null>(null);
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -47,14 +52,30 @@ export const Jobs: React.FC = () => {
     setLoading(false);
   };
 
-  const handleApply = async (jobId: string) => {
-    setApplying(jobId);
+  const openApplyModal = (job: Job) => {
+    setJobToApply(job);
+    setApplyModalOpen(true);
+    setResumeFile(null);
+    setSignedConsentFile(null);
+  };
+
+  const handleSubmitApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!jobToApply) return;
+
+    setApplying(jobToApply._id);
     setMessage(null);
+    setApplyModalOpen(false); // Close modal and show loading in background or global
+
+    const data = new FormData();
+    if (resumeFile) data.append('resume', resumeFile);
+    if (signedConsentFile) data.append('consentForm', signedConsentFile);
+
     try {
-      const res = await ApplicationService.applyJob(jobId);
+      const res = await ApplicationService.applyJob(data, jobToApply._id);
       if (res.success) {
         setMessage({ type: 'success', text: 'Application submitted successfully!' });
-        setAppliedJobIds(prev => new Set(prev).add(jobId));
+        setAppliedJobIds(prev => new Set(prev).add(jobToApply._id));
       } else {
         setMessage({ type: 'error', text: res.message || 'Failed to apply' });
       }
@@ -62,10 +83,12 @@ export const Jobs: React.FC = () => {
       setMessage({ type: 'error', text: 'An error occurred' });
     } finally {
       setApplying(null);
-      // Clear message after 3 seconds
+      setJobToApply(null);
       setTimeout(() => setMessage(null), 3000);
     }
   };
+
+  // const handleApply = async (jobId: string) => { ... } // Replaced by openApplyModal and handleSubmitApplication
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -151,7 +174,7 @@ export const Jobs: React.FC = () => {
                   </button>
 
                   <button
-                    onClick={() => !isApplied && handleApply(job._id)}
+                    onClick={() => !isApplied && openApplyModal(job)}
                     disabled={applying === job._id || isApplied}
                     className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 uppercase tracking-wide
                     ${isApplied
@@ -223,15 +246,78 @@ export const Jobs: React.FC = () => {
                         {selectedJob.educationRequirements.twelfthPercent && <li>12th: {selectedJob.educationRequirements.twelfthPercent}%</li>}
                         {selectedJob.educationRequirements.bachelorsPercent && <li>Bachelor's: {selectedJob.educationRequirements.bachelorsPercent}%</li>}
                         {selectedJob.educationRequirements.mastersPercent && <li>Master's: {selectedJob.educationRequirements.mastersPercent}%</li>}
+                        {selectedJob.educationRequirements.maxBacklogs !== undefined && <li>Max Active Backlogs: {selectedJob.educationRequirements.maxBacklogs}</li>}
                       </ul>
                     </div>
                   )}
+
+                  {selectedJob.consentFormUrl && (
+                    <div className="mt-6">
+                      <a href={`http://localhost:3000/${selectedJob.consentFormUrl}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-blue-600 hover:underline">
+                        <CheckCircle className="h-4 w-4 mr-2" /> Download Consent Form Template
+                      </a>
+                    </div>
+                  )}
+
+                  <div className="mt-6 flex justify-end">
+                    <button
+                      onClick={() => { setSelectedJob(null); openApplyModal(selectedJob); }}
+                      className="bg-blue-900 text-white px-6 py-2 rounded-md hover:bg-blue-800"
+                      disabled={appliedJobIds.has(selectedJob._id)}
+                    >
+                      {appliedJobIds.has(selectedJob._id) ? "Already Applied" : "Apply to this Job"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Application Modal */}
+      {applyModalOpen && jobToApply && (
+        <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-apply" role="dialog" aria-modal="true">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={() => setApplyModalOpen(false)}></div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium leading-6 text-gray-900">Apply for {jobToApply.title}</h3>
+                  <button onClick={() => setApplyModalOpen(false)} className="text-gray-400 hover:text-gray-500"><X className="h-5 w-5" /></button>
+                </div>
+
+                <form onSubmit={handleSubmitApplication}>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Upload Resume</label>
+                    <input type="file" required accept=".pdf,.doc,.docx" onChange={(e) => setResumeFile(e.target.files ? e.target.files[0] : null)} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                  </div>
+
+                  {jobToApply.consentFormUrl && (
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Upload Signed Consent Form</label>
+                      <p className="text-xs text-gray-500 mb-2">Please download the template from job details, sign it, and upload here.</p>
+                      <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={(e) => setSignedConsentFile(e.target.files ? e.target.files[0] : null)} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                    </div>
+                  )}
+
+                  <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                    <button type="submit" disabled={!resumeFile} className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-900 text-base font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm disabled:opacity-50">
+                      Submit Application
+                    </button>
+                    <button type="button" onClick={() => setApplyModalOpen(false)} className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:col-start-1 sm:text-sm">
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

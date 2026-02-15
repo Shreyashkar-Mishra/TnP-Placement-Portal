@@ -61,7 +61,7 @@ export const Home: React.FC = () => {
             </div>
             <div className="mt-10 lg:mt-0 lg:w-1/2 relative">
               <div className="bg-gray-100 p-2 rounded-sm shadow-xl transform rotate-2">
-                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Students in library" className="w-full h-auto rounded-sm" />
+                <img src="/10.jpeg" alt="Students in library" className="w-full h-auto rounded-sm" />
               </div>
             </div>
           </div>

@@ -11,13 +11,12 @@ export interface User {
   email: string;
   phoneNumber: string;
   roles: string[];
+  college?: string;
   // Profile fields are optional based on backend logic
   // Profile fields are optional based on backend logic
   profile?: {
     bio?: string;
     skills?: string[];
-    resume?: string;
-    resumeOriginalName?: string;
     profilePhoto?: string;
     prn?: string;
     education?: {
@@ -25,6 +24,9 @@ export interface User {
       twelfthPercent?: number;
       bachelorsPercent?: number;
       mastersPercent?: number;
+      maxBacklogs?: number;
+      mastersCGPA?: number;
+      activeBacklogs?: number;
       passingYear?: number;
       branch?: string;
     };
@@ -61,6 +63,7 @@ export interface Job {
   educationRequirements: EducationRequirements;
   createdBy: string | User;
   createdAt: string;
+  consentFormUrl?: string;
 }
 
 export interface Application {
@@ -69,6 +72,8 @@ export interface Application {
   applicant: User;
   status: 'applied' | 'under review' | 'accepted' | 'rejected';
   createdAt: string;
+  resumeUrl?: string;
+  consentFormUrl?: string;
 }
 
 export interface ApiResponse<T> {

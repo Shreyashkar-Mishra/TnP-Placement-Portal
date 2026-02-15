@@ -14,6 +14,7 @@ import { CompanyDashboard } from './pages/CompanyDashboard';
 import { AdminCompanyRegister } from './pages/AdminCompanyRegister';
 import { AdminApprovals } from './pages/AdminApprovals';
 import { StudentProfile } from './pages/StudentProfile';
+import AdminStudents from './pages/AdminStudents';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { UserRole } from './types';
 
@@ -32,7 +33,6 @@ function App() {
             {/* Student Routes */}
             <Route element={<ProtectedRoute allowedRoles={[UserRole.Student]} />}>
               <Route path="/jobs" element={<Jobs />} />
-              <Route path="/jobs" element={<Jobs />} />
               <Route path="/applications" element={<Dashboard />} />
               <Route path="/profile" element={<StudentProfile />} />
             </Route>
@@ -44,6 +44,7 @@ function App() {
               <Route path="/admin/job/:id/applicants" element={<JobApplicants />} />
               <Route path="/admin/companies" element={<AdminCompanyRegister />} />
               <Route path="/admin/approvals" element={<AdminApprovals />} />
+              <Route path="/admin/students" element={<AdminStudents />} />
             </Route>
 
             {/* Company Routes */}

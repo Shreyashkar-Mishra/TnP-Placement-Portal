@@ -29,13 +29,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       <div className="bg-blue-900 text-white py-2 text-xs font-medium tracking-wide">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <div className="flex space-x-6">
-            <span className="flex items-center"><Phone className="h-3 w-3 mr-2" /> +91 20 2765 3168</span>
-            <span className="flex items-center"><Mail className="h-3 w-3 mr-2" /> tpo@pccoepune.org</span>
+            <span className="flex items-center"><Phone className="h-3 w-3 mr-2" /> +91 808745312</span>
+            <span className="flex items-center"><Mail className="h-3 w-3 mr-2" /> rajkamal.sangole@pccoepune.org</span>
           </div>
           <div className="hidden md:flex space-x-4">
             <a href="#" onClick={handlePlaceholderClick} className="hover:text-yellow-400 transition-colors">Alumni</a>
-            <span className="text-blue-700">|</span>
-            <a href="#" onClick={handlePlaceholderClick} className="hover:text-yellow-400 transition-colors">Faculty</a>
             <span className="text-blue-700">|</span>
             <a href="https://mca.pccoepune.com/" target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-yellow-400 transition-colors"><Globe className="h-3 w-3 mr-1" /> Main Website</a>
           </div>
@@ -87,6 +85,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                       </Link>
                       <Link to="/admin/approvals" className={`py-2 text-sm uppercase tracking-wide transition-all ${isActive('/admin/approvals')}`}>
                         Approvals
+                      </Link>
+                      <Link to="/admin/students" className={`py-2 text-sm uppercase tracking-wide transition-all ${isActive('/admin/students')}`}>
+                        Students
                       </Link>
                     </>
                   )}
@@ -156,6 +157,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   {role === 'admin' && (
                     <>
                       <Link to="/admin/companies" className="block px-3 py-2 text-base font-medium text-gray-700 border-l-4 border-transparent hover:bg-gray-50 hover:border-blue-900">Recruiters</Link>
+                      <Link to="/admin/students" className="block px-3 py-2 text-base font-medium text-gray-700 border-l-4 border-transparent hover:bg-gray-50 hover:border-blue-900">Students</Link>
                     </>
                   )}
                   <button onClick={handleLogout} className="w-full text-left block px-3 py-2 text-base font-medium text-red-700 hover:bg-red-50">Logout</button>
@@ -190,15 +192,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-yellow-400 transition-colors">Placement Statistics</a></li>
                 <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-yellow-400 transition-colors">Our Recruiters</a></li>
                 <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-yellow-400 transition-colors">Student Resources</a></li>
-                <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-yellow-400 transition-colors">Contact Us</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-lg font-bold text-white mb-4 uppercase text-sm tracking-wider">Contact</h4>
               <ul className="space-y-2 text-sm text-gray-300">
                 <li className="flex items-start"><span className="font-bold mr-2">Address:</span> Sector - 26, Pradhikaran, Nigdi, Pune - 411044</li>
-                <li className="flex items-center"><span className="font-bold mr-2">Email:</span> tpo@pccoepune.org</li>
-                <li className="flex items-center"><span className="font-bold mr-2">Phone:</span> +91 20 2765 3168</li>
+                <li className="flex items-center"><span className="font-bold mr-2">Email:</span> rajkamal.sangole@pccoepune.org</li>
+                <li className="flex items-center"><span className="font-bold mr-2">Phone:</span> +91 808745312</li>
               </ul>
             </div>
           </div>

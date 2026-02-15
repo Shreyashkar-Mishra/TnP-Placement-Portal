@@ -13,6 +13,7 @@ export const PostJob: React.FC = () => {
 
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
+  const [consentFile, setConsentFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -20,7 +21,8 @@ export const PostJob: React.FC = () => {
       tenthPercent: '',
       twelfthPercent: '',
       bachelorsPercent: '',
-      mastersPercent: ''
+      mastersPercent: '',
+      maxBacklogs: '0'
     },
     location: '',
     salary: '',
@@ -66,7 +68,8 @@ export const PostJob: React.FC = () => {
                 tenthPercent: j.educationRequirements?.tenthPercent || '',
                 twelfthPercent: j.educationRequirements?.twelfthPercent || '',
                 bachelorsPercent: j.educationRequirements?.bachelorsPercent || '',
-                mastersPercent: j.educationRequirements?.mastersPercent || ''
+                mastersPercent: j.educationRequirements?.mastersPercent || '',
+                maxBacklogs: j.educationRequirements?.maxBacklogs?.toString() || '0'
               },
               location: j.location || '',
               salary: j.salary?.toString() || '',
@@ -108,38 +111,59 @@ export const PostJob: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    const payload = {
-      ...formData,
-      salary: Number(formData.salary),
-      positionsAvailable: Number(formData.positionsAvailable),
-      educationRequirements: {
-        tenthPercent: Number(formData.educationRequirements.tenthPercent) || 0,
-        twelfthPercent: Number(formData.educationRequirements.twelfthPercent) || 0,
-        bachelorsPercent: Number(formData.educationRequirements.bachelorsPercent) || 0,
-        mastersPercent: formData.educationRequirements.mastersPercent ? Number(formData.educationRequirements.mastersPercent) : undefined
-      }
-    };
+    const data = new FormData();
+    data.append('title', formData.title);
+    data.append('description', formData.description);
+    data.append('location', formData.location);
+    data.append('salary', formData.salary);
+    data.append('position', formData.position);
+    data.append('positionsAvailable', formData.positionsAvailable);
+    data.append('applicationDeadline', formData.applicationDeadline);
+    data.append('jobType', formData.jobType);
+    data.append('workMode', formData.workMode);
+
+    if (formData.companyId) data.append('companyId', formData.companyId);
+
+    // Flatten education requirements
+    data.append('educationRequirements[tenthPercent]', formData.educationRequirements.tenthPercent || '0');
+    data.append('educationRequirements[twelfthPercent]', formData.educationRequirements.twelfthPercent || '0');
+    data.append('educationRequirements[bachelorsPercent]', formData.educationRequirements.bachelorsPercent || '0');
+    if (formData.educationRequirements.mastersPercent) {
+      data.append('educationRequirements[mastersPercent]', formData.educationRequirements.mastersPercent);
+    }
+    data.append('educationRequirements[maxBacklogs]', formData.educationRequirements.maxBacklogs || '0');
+
+    if (consentFile) {
+      data.append('consentForm', consentFile);
+    }
 
     try {
       let res;
       if (isEditMode && editJobId) {
-        res = await JobService.updateJob(editJobId, payload);
+        // Update not supporting file upload yet in this flow or same endpoint?
+        // Usually update uses JSON. If we want file update, we need multipart/form-data on PUT too.
+        // For now, assuming only POST supports file upload as per plan.
+        // Existing updateJob controller uses req.body directly. 
+        // Let's warn user or just send JSON for update if file not changed?
+        // Simplest: Don't support file update in Edit mode for now, or assume backend handles JSON update.
+        // Detailed Refactor: Backend updateJob needs to handle file.
+        // Current task focus: Creating a job with consent form.
+        res = await JobService.updateJob(editJobId, formData); // Fallback to JSON for edit
       } else {
-        res = await JobService.postJob(payload);
+        res = await JobService.postJob(data); // FormData for create
       }
 
       if (res.success) {
         alert(isEditMode ? 'Job updated successfully. Applications have been reset.' : 'Job posted successfully.');
-        // Redirect based on role
         if (user?.roles.includes('company')) {
           navigate('/company/dashboard');
         } else {
-          navigate('/dashboard'); // Admin dashboard
+          navigate('/dashboard');
         }
       } else {
         alert('Failed to save job: ' + res.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       alert('Error saving job');
     } finally {
@@ -219,10 +243,7 @@ export const PostJob: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="col-span-6 sm:col-span-3">
-                  <label htmlFor="position" className="block text-sm font-medium text-gray-700">Role/Position Type</label>
-                  <input type="text" name="position" id="position" required value={formData.position} onChange={handleChange} className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border p-2" />
-                </div>
+
 
                 <div className="col-span-6 sm:col-span-3">
                   <label htmlFor="positionsAvailable" className="block text-sm font-medium text-gray-700">No. of Openings</label>
@@ -232,6 +253,26 @@ export const PostJob: React.FC = () => {
                 <div className="col-span-6 sm:col-span-3">
                   <label htmlFor="applicationDeadline" className="block text-sm font-medium text-gray-700">Deadline</label>
                   <input type="date" name="applicationDeadline" id="applicationDeadline" required value={formData.applicationDeadline} onChange={handleChange} className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border p-2" />
+                </div>
+
+                <div className="col-span-6">
+                  <label className="block text-sm font-medium text-gray-700">Consent Form Format (PDF/DOC)</label>
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                    <div className="space-y-1 text-center">
+                      <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <div className="flex text-sm text-gray-600">
+                        <label htmlFor="consent-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                          <span>Upload a file</span>
+                          <input id="consent-upload" name="file" type="file" className="sr-only" onChange={(e) => setConsentFile(e.target.files ? e.target.files[0] : null)} accept=".pdf,.doc,.docx" />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                      </div>
+                      <p className="text-xs text-gray-500">PDF, DOC up to 10MB</p>
+                      {consentFile && <p className="text-sm text-green-600">{consentFile.name}</p>}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="col-span-6">
@@ -253,6 +294,17 @@ export const PostJob: React.FC = () => {
                       <div>
                         <label className="text-xs text-gray-500">Master's % (if applicable)</label>
                         <input type="number" step="0.1" name="educationRequirements.mastersPercent" value={formData.educationRequirements.mastersPercent} onChange={handleChange} className="block w-full border-gray-300 rounded-md border p-1 text-sm" />
+                      </div>
+                      <div className="col-span-2">
+                        <label className="text-xs text-gray-500">Max Allowed Active Backlogs</label>
+                        <select name="educationRequirements.maxBacklogs" value={formData.educationRequirements.maxBacklogs} onChange={handleChange} className="block w-full border-gray-300 rounded-md border p-1 text-sm">
+                          <option value="0">0</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5+</option>
+                        </select>
                       </div>
                     </div>
                   </fieldset>
