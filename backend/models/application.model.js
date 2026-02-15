@@ -8,6 +8,8 @@ const applicationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, ref: 'User',
         required: true
     },
+    resumeUrl: { type: String },
+    consentFormUrl: { type: String },
     status: { type: String, enum: ['applied', 'under review', 'accepted', 'rejected', 'selected'], default: 'applied' }
 }, { timeseries: true });
 

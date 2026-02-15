@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
     enum: ['student', 'admin', 'company'],
     default: ['student']
   },
+  college: {
+    type: String,
+    enum: ['PCCOE', 'PCU'],
+  },
   company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company' },
   // profile: {
   profile: {
@@ -32,6 +36,8 @@ const userSchema = new mongoose.Schema({
       twelfthPercent: { type: Number },
       bachelorsPercent: { type: Number },
       mastersPercent: { type: Number },
+      mastersCGPA: { type: Number },
+      activeBacklogs: { type: Number, default: 0 },
       passingYear: { type: Number },
       branch: { type: String }
     }

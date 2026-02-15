@@ -47,7 +47,8 @@ const jobSchema = new mongoose.Schema({
   location: { type: String, required: true },
   salary: { type: Number, required: true },
   postedDate: { type: Date, default: Date.now },
-  role: { type: String, required: true },
+  postedDate: { type: Date, default: Date.now },
+  role: { type: String, default: 'Student' }, // Made optional/default as per user request to remove input
 
   positionsAvailable: { type: Number, required: true },
   applicationDeadline: { type: Date, required: true },
@@ -56,7 +57,8 @@ const jobSchema = new mongoose.Schema({
     tenthPercent: Number,
     twelfthPercent: Number,
     bachelorsPercent: Number,
-    mastersPercent: Number
+    mastersPercent: Number,
+    maxBacklogs: { type: Number, default: 0 }
   },
 
   jobType: {
@@ -69,6 +71,11 @@ const jobSchema = new mongoose.Schema({
     type: String,
     enum: ['On-site', 'Remote', 'Hybrid'],
     required: true
+  },
+
+  consentFormUrl: {
+    type: String,
+    default: ""
   },
 
   createdBy: {
