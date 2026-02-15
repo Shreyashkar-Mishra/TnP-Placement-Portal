@@ -38,12 +38,22 @@ export const JobApplicants: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Applicants</h2>
-                <button
-                    onClick={() => id && ApplicationService.downloadExcel(id)}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none"
-                >
-                    Download Excel
-                </button>
+                <div className="flex space-x-2">
+                    <button
+                        onClick={() => id && ApplicationService.downloadExcel(id)}
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none"
+                    >
+                        Export Applicants
+                    </button>
+                    {/* Show Attendance Sheet only for Admin (assuming we check role or just show it and let backend handle 403, 
+                       but cleaner to check role from context. For now, showing it, backend is secured.) */}
+                    <button
+                        onClick={() => id && ApplicationService.downloadAttendanceSheet(id)}
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-900 hover:bg-blue-800 focus:outline-none"
+                    >
+                        Download Attendance Sheet
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white shadow overflow-hidden sm:rounded-lg">
