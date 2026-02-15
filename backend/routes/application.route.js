@@ -1,7 +1,7 @@
 import express from 'express';
 import isAuthenticated from '../middlewares/isAuthenticated.js';
 import { upload } from '../middlewares/multer.js';
-import { applyJob, getAppliedJobs, getApplicants, updateApplicationStatus, getPlacementCount, downloadApplicantsExcel } from '../controllers/application.controller.js';
+import { applyJob, getAppliedJobs, getApplicants, updateApplicationStatus, getPlacementCount, downloadApplicantsExcel, downloadAttendanceSheet } from '../controllers/application.controller.js';
 
 
 const router = express.Router();
@@ -16,6 +16,7 @@ router.route("/status/:id/update").post(isAuthenticated, updateApplicationStatus
 
 router.route("/getPlacementCount").get(isAuthenticated, getPlacementCount);
 router.route("/download-excel/:jobId").get(isAuthenticated, downloadApplicantsExcel);
+router.route("/download-attendance/:jobId").get(isAuthenticated, downloadAttendanceSheet);
 
 export default router;
 
