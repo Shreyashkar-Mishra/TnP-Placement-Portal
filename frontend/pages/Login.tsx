@@ -80,14 +80,14 @@ export const Login: React.FC = () => {
         </div>
         <div className="relative z-10 w-full flex flex-col justify-center px-12 text-white">
           <GraduationCap className="h-16 w-16 mb-6 text-yellow-500" />
-          <h1 className="text-4xl font-serif font-bold mb-4">Welcome to the PCCoE Placement Portal</h1>
+          <h1 className="text-4xl font-serif font-bold mb-4">Welcome to the PCCoE MCA Placement Portal</h1>
           <p className="text-lg text-blue-100 leading-relaxed">
             The official centralized platform for campus recruitment activities. Students and recruiters can manage their processes efficiently and securely.
           </p>
           <div className="mt-12 pt-12 border-t border-blue-700">
             <p className="text-sm text-blue-300">
               Need assistance? Contact the TPO cell at <br />
-              <span className="font-semibold text-white">tpo@pccoepune.org</span>
+              <span className="font-semibold text-white">rajkamal.sangole@pccoepune.org</span>
             </p>
           </div>
         </div>

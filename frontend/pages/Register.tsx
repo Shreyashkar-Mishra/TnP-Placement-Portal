@@ -440,7 +440,7 @@ export const Register: React.FC = () => {
           </div>
         </div>
         <div className="text-center mt-4">
-          <p className="text-xs text-gray-500">&copy; PCCoE Training & Placement Cell</p>
+          <p className="text-xs text-gray-500">&copy; PCCoE MCA Training & Placement Cell</p>
         </div>
       </div>
     </div>

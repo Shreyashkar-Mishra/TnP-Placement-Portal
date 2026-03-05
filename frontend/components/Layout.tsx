@@ -52,7 +52,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               </div>
               <div className="ml-4 flex flex-col justify-center h-full">
                 <span className="text-2xl font-serif font-bold text-blue-900 leading-none tracking-tight">PCCoE</span>
-                <span className="text-sm text-gray-600 font-medium uppercase tracking-wider mt-1">Training & Placement Cell</span>
+                <span className="text-sm text-gray-600 font-medium uppercase tracking-wider mt-1">MCA Training & Placement Cell</span>
               </div>
             </div>
 
@@ -183,7 +183,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             <div className="col-span-1 md:col-span-2">
               <h3 className="text-xl font-serif font-bold text-yellow-500 mb-4">Pimpri Chinchwad College of Engineering</h3>
               <p className="text-gray-300 text-sm leading-relaxed max-w-sm">
-                Dedicated to serving the society by providing quality education and promoting interaction with the industry. The Training & Placement Cell ensures the best opportunities for every student.
+                Dedicated to serving the society by providing quality education and promoting interaction with the industry. The PCCoE MCA Training & Placement Cell ensures the best opportunities for every student.
               </p>
             </div>
             <div>
@@ -204,7 +204,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
-            <p>&copy; {new Date().getFullYear()} PCCoE Training & Placement Cell. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} PCCoE MCA Training & Placement Cell. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -17,7 +17,7 @@ export const Home: React.FC = () => {
         <div className="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
           <div className="text-center md:text-left md:w-2/3">
             <h1 className="text-4xl font-serif font-bold tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
-              Training & Placement Cell
+              PCCoE MCA Training & Placement Cell
             </h1>
             <p className="mt-6 text-xl text-blue-100 max-w-3xl font-light leading-relaxed">
               Bridging the gap between academia and industry. We are committed to providing comprehensive career guidance and placement opportunities for our engineering graduates.
