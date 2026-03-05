@@ -27,7 +27,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads'));
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Dynamically allow the request origin to prevent trailing slash or sub-domain CORS issues
+    callback(null, origin || true);
+  },
   credentials: true,
 };
 app.use(cors(corsOptions));
