@@ -6,7 +6,9 @@ dotenv.config();
 
 // Create transporter - verify these sensitive fields in environment variables
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Use SSL to bypass Render outbound SMTP blocks
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS?.replace(/\s+/g, '') // Remove spaces from App Password
