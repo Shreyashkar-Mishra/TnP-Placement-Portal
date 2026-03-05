@@ -253,7 +253,7 @@ export const Jobs: React.FC = () => {
 
                   {selectedJob.consentFormUrl && (
                     <div className="mt-6">
-                      <a href={`http://localhost:3000/${selectedJob.consentFormUrl}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-blue-600 hover:underline">
+                      <a href={`/${selectedJob.consentFormUrl}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-blue-600 hover:underline">
                         <CheckCircle className="h-4 w-4 mr-2" /> Download Consent Form Template
                       </a>
                     </div>

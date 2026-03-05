@@ -10,26 +10,30 @@ import { z } from 'zod';
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 export const sendOtp = async (req, res) => {
+  console.log("!!! ENTERING sendOtp FUNCTION !!!");
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Email is required", success: false });
-
-    const existingUser = await User.findOne({ email });
+    const trimmedEmail = email?.trim();
+    console.log(trimmedEmail);
+    if (!trimmedEmail) return res.status(400).json({ message: "Email is required", success: false });
+    console.log("after if")
+    const existingUser = await User.findOne({ email: trimmedEmail });
     if (existingUser) return res.status(400).json({ message: "User already exists", success: false });
-
+    console.log("after existing user", existingUser)
     const otp = generateOtp();
-
+    console.log("after otp")
     // Remove existing OTP for this email
-    await OTP.deleteMany({ email });
+    await OTP.deleteMany({ email: trimmedEmail });
+    console.log("after delete")
 
     // Save new OTP
-    await OTP.create({ email, otp });
+    await OTP.create({ email: trimmedEmail, otp });
 
     // Log OTP for debugging/offline usage
-    console.log(`[DEV ONLY] OTP for ${email}: ${otp}`);
+    console.log(`[DEV ONLY] OTP for ${trimmedEmail}: ${otp}`);
 
     // Send Email
-    const sent = await sendOtpEmail(email, otp);
+    const sent = await sendOtpEmail(trimmedEmail, otp);
     if (!sent.success) {
       console.error("Failed to send OTP email:", sent.error);
       // Allow proceeding even if email fails (for dev/wifi issues), user can check terminal
@@ -47,7 +51,10 @@ export const register = async (req, res) => {
   try {
     const { name, email, phoneNumber, password, role, otp, college } = req.body;
 
-    if (!name || !email || !phoneNumber || !password || !role || !otp) {
+    const trimmedEmail = email?.trim();
+    const trimmedOtp = otp?.trim();
+
+    if (!name || !trimmedEmail || !phoneNumber || !password || !role || !trimmedOtp) {
       return res.status(400).json({ message: 'All required fields including OTP must be filled', success: false });
     }
     if (role === 'student' && !college) {
@@ -55,12 +62,12 @@ export const register = async (req, res) => {
     }
 
     // Verify OTP
-    const otpRecord = await OTP.findOne({ email, otp });
+    const otpRecord = await OTP.findOne({ email: trimmedEmail, otp: trimmedOtp });
     if (!otpRecord) {
       return res.status(400).json({ message: "Invalid or expired OTP", success: false });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: trimmedEmail });
     if (user) {
       return res.status(400).json({ message: 'User already exists', success: false });
     }
@@ -73,12 +80,12 @@ export const register = async (req, res) => {
     let companyId = null;
     if (role === 'company') {
       let company = await Company.findOne({
-        $or: [{ email: email }, { name: name }]
+        $or: [{ email: trimmedEmail }, { name: name }]
       });
       if (!company) {
         company = await Company.create({
           name: name,
-          email: email,
+          email: trimmedEmail,
         });
       }
       companyId = company._id;
@@ -86,7 +93,7 @@ export const register = async (req, res) => {
 
     const newUser = await User.create({
       name,
-      email,
+      email: trimmedEmail,
       phoneNumber,
       password: hashedPassword,
       roles: [role],
@@ -100,7 +107,7 @@ export const register = async (req, res) => {
     }
 
     // Clear OTP after successful registration
-    await OTP.deleteMany({ email });
+    await OTP.deleteMany({ email: trimmedEmail });
 
     return res.status(201).json({
       message: role === 'admin' ? 'Registration successful. Please wait for admin approval.' : 'User registered successfully',

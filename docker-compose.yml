@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tnp_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      # Provide path to environment variables or define them here
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    networks:
+      - tnp_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tnp_frontend
+    ports:
+      - "80:80" # Access the app at http://localhost
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - tnp_network
+
+networks:
+  tnp_network:
+    driver: bridge

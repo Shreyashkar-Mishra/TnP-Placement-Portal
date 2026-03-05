@@ -1,5 +1,6 @@
 import Application from '../models/application.model.js';
 import Job from '../models/job.model.js';
+import User from '../models/user.model.js';
 export const applyJob = async (req, res) => {
   // Logic to apply for a job here
   try {
@@ -85,7 +86,7 @@ export const getAppliedJobs = async (req, res) => {
   } catch (error) { console.log({ message: error.message }) }
 };
 
-import User from '../models/user.model.js'; // Ensure User is imported
+
 
 export const getApplicants = async (req, res) => {
   // Logic to get applicants for a job here
@@ -209,8 +210,8 @@ export const downloadApplicantsExcel = async (req, res) => {
       const profile = student.profile || {};
       const education = profile.education || {};
 
-      const resumeLink = app.resumeUrl ? { text: 'View Resume', hyperlink: `http://localhost:8000/${app.resumeUrl}` } : 'N/A';
-      const consentLink = app.consentFormUrl ? { text: 'View Consent', hyperlink: `http://localhost:8000/${app.consentFormUrl}` } : 'N/A';
+      const resumeLink = app.resumeUrl ? { text: 'View Resume', hyperlink: `/${app.resumeUrl}` } : 'N/A';
+      const consentLink = app.consentFormUrl ? { text: 'View Consent', hyperlink: `/${app.consentFormUrl}` } : 'N/A';
 
       const rowData = [
         profile.prn || 'N/A',
@@ -263,10 +264,19 @@ export const downloadAttendanceSheet = async (req, res) => {
 
     // Check if requester is admin - STRICTLY ADMIN ONLY
     const userId = req.user;
+    console.log(`[downloadAttendanceSheet] Request from UserID: ${userId}`);
+
     const requester = await User.findById(userId);
-    if (requester.role !== 'admin') {
+    if (!requester) {
+      console.log(`[downloadAttendanceSheet] Requester not found`);
+      return res.status(404).json({ message: "User not found", success: false });
+    }
+
+    if (!requester.roles || !requester.roles.includes('admin')) {
+      console.log(`[downloadAttendanceSheet] Access denied. Roles: ${requester.roles}`);
       return res.status(403).json({ message: "Access denied. Admins only.", success: false });
     }
+    console.log(`[downloadAttendanceSheet] Access granted for admin`);
 
     const applications = await Application.find({ job: jobId }).populate({
       path: 'applicant',
@@ -344,7 +354,7 @@ export const downloadAttendanceSheet = async (req, res) => {
     res.end();
 
   } catch (error) {
-    console.error(error);
+    console.error(`[downloadAttendanceSheet] Error:`, error);
     return res.status(500).json({ message: "Server error", success: false });
   }
 }
