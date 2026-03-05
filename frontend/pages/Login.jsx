@@ -298,7 +298,7 @@ export const Login = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-sm shadow-sm text-sm font-medium text-white bg-blue-900 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900 disabled:opacity-50 transition-colors uppercase tracking-wide"
+                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-md text-sm font-bold text-white bg-blue-900 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900 disabled:opacity-50 transition-all hover:shadow-lg uppercase tracking-wider"
                 >
                   {loading ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -324,7 +324,7 @@ export const Login = () => {
               <div className="mt-6">
                 <Link
                   to="/register"
-                  className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-sm shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-bold text-gray-700 bg-white hover:bg-gray-50 hover:shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900"
                 >
                   Create an account
                 </Link>

@@ -105,7 +105,7 @@ export const Jobs = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-blue-900 mb-2">
+          <h1 className="text-4xl font-sans font-extrabold tracking-tight text-blue-900 mb-2">
             Career Opportunities
           </h1>
           <p className="text-gray-500 text-sm">
@@ -122,14 +122,15 @@ export const Jobs = () => {
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-l-sm leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-900 focus:border-blue-900 sm:text-sm h-10"
+              className="block w-full pl-12 pr-4 py-3 border border-gray-200 rounded-l-full leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 sm:text-sm transition-all"
+              placeholder="Search companies, roles..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <button
             type="submit"
-            className="bg-blue-900 text-white px-6 py-2 rounded-r-sm hover:bg-blue-800 transition-colors uppercase tracking-wide text-sm font-medium h-10"
+            className="bg-blue-900 text-white px-8 py-3 rounded-r-full hover:bg-blue-800 transition-all uppercase tracking-wider text-sm font-bold shadow-md hover:shadow-lg"
           >
             Search
           </button>
@@ -149,7 +150,7 @@ export const Jobs = () => {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="animate-pulse bg-white rounded-sm shadow-sm border border-gray-200 h-64"
+              className="animate-pulse bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 h-64"
             ></div>
           ))}
         </div>
@@ -160,7 +161,7 @@ export const Jobs = () => {
             return (
               <div
                 key={job._id}
-                className="bg-white overflow-hidden shadow-sm rounded-sm border border-gray-200 hover:shadow-md transition-shadow flex flex-col group relative"
+                className="bg-white overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl border border-gray-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col group relative"
               >
                 <div className="p-6 flex-grow">
                   <div className="flex items-center">
@@ -168,7 +169,7 @@ export const Jobs = () => {
                       <Building2 className="h-6 w-6 text-white" />
                     </div>
                     <div className="ml-4">
-                      <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
+                      <h3 className="text-xl font-sans font-extrabold tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors">
                         {job.title}
                       </h3>
                       <p className="text-sm text-gray-500 font-medium">
@@ -214,12 +215,12 @@ export const Jobs = () => {
                   <button
                     onClick={() => !isApplied && openApplyModal(job)}
                     disabled={applying === job._id || isApplied}
-                    className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 uppercase tracking-wide
-                    ${
-                      isApplied
+                    className={`inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-bold rounded-full shadow-sm focus:outline-none transition-all uppercase tracking-wide
+
+                    ${isApplied
                         ? "bg-green-600 text-white cursor-default hover:bg-green-700"
                         : "bg-blue-900 text-white hover:bg-blue-800 focus:ring-blue-900"
-                    } disabled:opacity-50`}
+                      } disabled:opacity-50`}
                   >
                     {isApplied ? (
                       <>
@@ -360,11 +361,11 @@ export const Jobs = () => {
                         )}
                         {selectedJob.educationRequirements.maxBacklogs !==
                           undefined && (
-                          <li>
-                            Max Active Backlogs:{" "}
-                            {selectedJob.educationRequirements.maxBacklogs}
-                          </li>
-                        )}
+                            <li>
+                              Max Active Backlogs:{" "}
+                              {selectedJob.educationRequirements.maxBacklogs}
+                            </li>
+                          )}
                       </ul>
                     </div>
                   )}

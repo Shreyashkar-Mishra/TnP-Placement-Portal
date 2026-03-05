@@ -20,17 +20,17 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 
 const StatCard = ({ title, value, icon, color }) => (
-  <div className="bg-white overflow-hidden shadow-sm rounded-sm border border-gray-200">
-    <div className="p-5">
+  <div className="bg-white overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl border border-gray-100 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1">
+    <div className="p-6">
       <div className="flex items-center">
-        <div className={`flex-shrink-0 rounded-sm p-3 ${color}`}>{icon}</div>
+        <div className={`flex-shrink-0 rounded-xl p-4 shadow-inner ${color}`}>{icon}</div>
         <div className="ml-5 w-0 flex-1">
           <dl>
-            <dt className="text-sm font-medium text-gray-500 truncate uppercase tracking-wider">
+            <dt className="text-xs font-bold text-gray-500 truncate uppercase tracking-widest">
               {title}
             </dt>
             <dd>
-              <div className="text-2xl font-serif font-bold text-gray-900">
+              <div className="text-3xl font-sans font-extrabold tracking-tight text-gray-900 mt-1">
                 {value}
               </div>
             </dd>
@@ -67,10 +67,10 @@ const StudentDashboard = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-serif font-bold text-blue-900">
+        <h2 className="text-3xl font-sans font-extrabold tracking-tight text-blue-900">
           Student Dashboard
         </h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 mt-1">
           Overview of your placement activities.
         </p>
       </div>
@@ -102,7 +102,7 @@ const StudentDashboard = () => {
         />
       </div>
 
-      <div className="bg-white shadow-sm rounded-sm border border-gray-200">
+      <div className="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl border border-gray-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             Recent Applications
@@ -144,16 +144,15 @@ const StudentDashboard = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-sm border
-                        ${
-                          app.status === "accepted"
-                            ? "bg-green-50 text-green-800 border-green-200"
+                        className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full shadow-sm border
+                        ${app.status === "accepted"
+                            ? "bg-green-100/50 text-green-700 border-green-200"
                             : app.status === "selected"
-                              ? "bg-blue-100 text-blue-800 border-blue-200"
+                              ? "bg-blue-100/50 text-blue-700 border-blue-200"
                               : app.status === "rejected"
-                                ? "bg-red-50 text-red-800 border-red-200"
-                                : "bg-yellow-50 text-yellow-800 border-yellow-200"
-                        }`}
+                                ? "bg-red-100/50 text-red-700 border-red-200"
+                                : "bg-yellow-100/50 text-yellow-700 border-yellow-200"
+                          }`}
                       >
                         {app.status === "accepted"
                           ? "Application Approved, Recruitment in Process"
@@ -238,10 +237,10 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-serif font-bold text-blue-900">
+        <h2 className="text-3xl font-sans font-extrabold tracking-tight text-blue-900">
           Admin Portal
         </h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 mt-1">
           Manage recruitment drives and student data.
         </p>
       </div>
@@ -273,14 +272,14 @@ const AdminDashboard = () => {
         />
       </div>
 
-      <div className="bg-white shadow-sm rounded-sm border border-gray-200">
+      <div className="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl border border-gray-100 overflow-hidden">
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             Posted Jobs Overview
           </h3>
           <Link
             to="/admin/post-job"
-            className="bg-blue-900 text-white px-4 py-2 rounded-sm text-sm hover:bg-blue-800 transition-colors uppercase tracking-wide"
+            className="bg-blue-900 text-white px-5 py-2.5 rounded-full font-bold text-xs hover:bg-blue-800 hover:shadow-lg transition-all uppercase tracking-wider"
           >
             Post New Job
           </Link>

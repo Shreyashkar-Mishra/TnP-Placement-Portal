@@ -236,8 +236,8 @@ export const Register = () => {
             <button
               onClick={() => setActiveTab(UserRole.Student)}
               className={`flex-1 py-4 text-center text-sm font-medium transition-colors duration-200 flex items-center justify-center ${activeTab === UserRole.Student
-                  ? "bg-white text-blue-900 border-b-2 border-blue-900 font-bold"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                ? "bg-white text-blue-900 border-b-2 border-blue-900 font-bold"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                 }`}
             >
               <User className="w-4 h-4 mr-2" />
@@ -246,8 +246,8 @@ export const Register = () => {
             <button
               onClick={() => setActiveTab(UserRole.Admin)}
               className={`flex-1 py-4 text-center text-sm font-medium transition-colors duration-200 flex items-center justify-center ${activeTab === UserRole.Admin
-                  ? "bg-white text-blue-900 border-b-2 border-blue-900 font-bold"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                ? "bg-white text-blue-900 border-b-2 border-blue-900 font-bold"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                 }`}
             >
               <ShieldCheck className="w-4 h-4 mr-2" />
@@ -256,8 +256,8 @@ export const Register = () => {
             <button
               onClick={() => setActiveTab(UserRole.Company)}
               className={`flex-1 py-4 text-center text-sm font-medium transition-colors duration-200 flex items-center justify-center ${activeTab === UserRole.Company
-                  ? "bg-white text-blue-900 border-b-2 border-blue-900 font-bold"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                ? "bg-white text-blue-900 border-b-2 border-blue-900 font-bold"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                 }`}
             >
               <svg
@@ -531,12 +531,12 @@ export const Register = () => {
                         <div
                           key={level}
                           className={`flex-1 rounded-full transition-all duration-300 ${passwordStrength >= level
-                              ? passwordStrength < 2
-                                ? "bg-red-500"
-                                : passwordStrength < 3
-                                  ? "bg-yellow-500"
-                                  : "bg-green-600"
-                              : "bg-gray-200"
+                            ? passwordStrength < 2
+                              ? "bg-red-500"
+                              : passwordStrength < 3
+                                ? "bg-yellow-500"
+                                : "bg-green-600"
+                            : "bg-gray-200"
                             }`}
                         />
                       ))}
@@ -579,7 +579,7 @@ export const Register = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-sm shadow-sm text-sm font-medium text-white bg-blue-900 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900 disabled:opacity-50 uppercase tracking-wide transition-colors"
+                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-md text-sm font-bold text-white bg-blue-900 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900 disabled:opacity-50 transition-all hover:shadow-lg uppercase tracking-wider"
                 >
                   {loading ? (
                     <Loader2 className="h-5 w-5 animate-spin" />

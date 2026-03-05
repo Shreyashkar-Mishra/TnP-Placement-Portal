@@ -41,13 +41,13 @@ export const Home = () => {
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link
                 to="/register"
-                className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-sm text-blue-900 bg-yellow-500 hover:bg-yellow-400 md:py-4 md:text-lg transition-colors shadow-md"
+                className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-bold rounded-full text-blue-900 bg-yellow-400 hover:bg-yellow-300 md:py-4 md:px-10 md:text-lg transition-all hover:-translate-y-1 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
               >
                 Student Registration
               </Link>
               <Link
                 to="/login"
-                className="inline-flex items-center justify-center px-8 py-3 border border-white text-base font-medium rounded-sm text-white hover:bg-white hover:text-blue-900 md:py-4 md:text-lg transition-colors backdrop-blur-sm bg-white/10"
+                className="inline-flex items-center justify-center px-8 py-3 border border-white/50 text-base font-bold rounded-full text-white hover:bg-white hover:text-blue-900 md:py-4 md:px-10 md:text-lg transition-all hover:-translate-y-1 backdrop-blur-md bg-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
               >
                 Portal Login
               </Link>

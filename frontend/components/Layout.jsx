@@ -26,8 +26,8 @@ export const Layout = ({ children }) => {
 
   const isActive = (path) =>
     location.pathname === path
-      ? "text-blue-900 border-b-2 border-blue-900 font-bold"
-      : "text-gray-700 hover:text-blue-900 hover:bg-gray-50";
+      ? "text-blue-900 bg-blue-50/80 font-bold rounded-full px-4"
+      : "text-gray-600 hover:text-blue-900 hover:bg-gray-50/50 rounded-full px-4";
 
   const handlePlaceholderClick = (e) => {
     e.preventDefault();
@@ -73,7 +73,7 @@ export const Layout = ({ children }) => {
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="bg-white shadow-md border-b-4 border-yellow-500 sticky top-0 z-50">
+        className="bg-white/85 backdrop-blur-md shadow-sm border-b-4 border-yellow-500 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-24">
             <div

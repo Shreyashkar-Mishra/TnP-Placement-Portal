@@ -82,8 +82,8 @@ const AdminStudents = () => {
           </div>
           <input
             type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-sm leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-900 focus:border-blue-900 sm:text-sm h-10"
-            placeholder="Search students..."
+            className="block w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 sm:text-sm transition-all shadow-inner"
+            placeholder="Search by name, email, branch..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
