@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Mail, ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
-import { AuthService } from '../services/api';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Mail, ArrowLeft, CheckCircle, Loader2 } from "lucide-react";
+import { AuthService } from "../services/api";
 
-export const ForgotPassword: React.FC = () => {
-  const [email, setEmail] = useState('');
+export const ForgotPassword = () => {
+  const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -17,7 +17,7 @@ export const ForgotPassword: React.FC = () => {
       setMessage(res.message);
       setSubmitted(true);
     } catch (error) {
-      setMessage('An error occurred. Please try again.');
+      setMessage("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -41,12 +41,15 @@ export const ForgotPassword: React.FC = () => {
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Check your email</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                {message}
-              </p>
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                Check your email
+              </h3>
+              <p className="mt-2 text-sm text-gray-500">{message}</p>
               <div className="mt-6">
-                <Link to="/login" className="text-blue-600 hover:text-blue-500 font-medium flex items-center justify-center">
+                <Link
+                  to="/login"
+                  className="text-blue-600 hover:text-blue-500 font-medium flex items-center justify-center"
+                >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Login
                 </Link>
@@ -55,7 +58,10 @@ export const ForgotPassword: React.FC = () => {
           ) : (
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email address
                 </label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -81,12 +87,19 @@ export const ForgotPassword: React.FC = () => {
                   disabled={loading}
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
-                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Send Reset Link'}
+                  {loading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    "Send Reset Link"
+                  )}
                 </button>
               </div>
 
               <div className="text-center">
-                <Link to="/login" className="text-sm font-medium text-blue-600 hover:text-blue-500">
+                <Link
+                  to="/login"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-500"
+                >
                   Back to Login
                 </Link>
               </div>

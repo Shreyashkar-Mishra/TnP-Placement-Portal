@@ -1,17 +1,14 @@
-
-import { UserRole } from '../types';
-
-const BASE_URL = '/api/v1';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api/v1";
 
 // Helper to handle fetch with credentials (cookies)
-const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
+const fetchWithAuth = async (endpoint, options = {}) => {
   const defaultHeaders = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 
   // If body is FormData, let browser set Content-Type (don't override)
   if (options.body instanceof FormData) {
-    delete defaultHeaders['Content-Type'];
+    delete defaultHeaders["Content-Type"];
   }
 
   const config = {
@@ -20,7 +17,7 @@ const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
       ...defaultHeaders,
       ...options.headers,
     },
-    credentials: 'include' as RequestCredentials, // Essential for the httpOnly token cookie
+    credentials: "include", // Essential for the httpOnly token cookie
   };
 
   try {
@@ -34,193 +31,207 @@ const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
     } else {
       // If backend sends text/html error or empty body
       const text = await response.text();
-      return { success: false, message: text || `Server Error: ${response.status}` };
+      return {
+        success: false,
+        message: text || `Server Error: ${response.status}`,
+      };
     }
-
   } catch (error) {
-    console.error('API Error:', error);
-    return { success: false, message: 'Network error. Ensure backend is running on port 8000 and CORS is configured.' };
+    console.error("API Error:", error);
+    return {
+      success: false,
+      message:
+        "Network error. Ensure backend is running on port 8000 and CORS is configured.",
+    };
   }
 };
 
 export const AuthService = {
   // Backend: router.route("/login").post(login);
-  login: async (email: string, password: string, role: string) => {
-    return fetchWithAuth('/user/login', {
-      method: 'POST',
+  login: async (email, password, role) => {
+    return fetchWithAuth("/user/login", {
+      method: "POST",
       body: JSON.stringify({ email, password, role }),
     });
   },
 
   getProfile: async () => {
-    return fetchWithAuth('/user/me');
+    return fetchWithAuth("/user/me");
   },
 
   // Backend: router.route("/register").post(register);
-  register: async (data: any) => {
-    return fetchWithAuth('/user/register', {
-      method: 'POST',
+  register: async (data) => {
+    return fetchWithAuth("/user/register", {
+      method: "POST",
       body: JSON.stringify(data),
     });
   },
 
-  sendOtp: async (email: string) => {
-    return fetchWithAuth('/user/send-otp', {
-      method: 'POST',
-      body: JSON.stringify({ email })
+  sendOtp: async (email) => {
+    return fetchWithAuth("/user/send-otp", {
+      method: "POST",
+      body: JSON.stringify({ email }),
     });
   },
 
   getPendingAdmins: async () => {
-    return fetchWithAuth('/user/admin/pending');
+    return fetchWithAuth("/user/admin/pending");
   },
 
-  approveAdmin: async (id: string) => {
+  approveAdmin: async (id) => {
     return fetchWithAuth(`/user/admin/approve/${id}`, {
-      method: 'POST'
+      method: "POST",
     });
   },
 
   getStudentCount: async () => {
-    return fetchWithAuth('/user/admin/studentCount');
+    return fetchWithAuth("/user/admin/studentCount");
   },
 
   // Backend: router.route("/logout").get(logout);
   logout: async () => {
-    return fetchWithAuth('/user/logout');
+    return fetchWithAuth("/user/logout");
   },
 
   // Backend: router.route("/profile/update").put(isAuthenticated, updateProfile);
-  updateProfile: async (formData: FormData) => {
-    return fetchWithAuth('/user/profile/update', {
-      method: 'PUT',
+  updateProfile: async (formData) => {
+    return fetchWithAuth("/user/profile/update", {
+      method: "PUT",
       body: formData,
     });
   },
 
-  forgotPassword: async (email: string) => {
+  forgotPassword: async (email) => {
     // Placeholder as backend logic wasn't provided for this specific route
-    return new Promise<{ success: boolean; message: string }>((resolve) => {
+    return new Promise((resolve) => {
       setTimeout(() => {
-        resolve({ success: true, message: 'If an account exists, a reset link has been sent.' });
+        resolve({
+          success: true,
+          message: "If an account exists, a reset link has been sent.",
+        });
       }, 1000);
     });
   },
 
   getAllStudents: async () => {
-    return fetchWithAuth('/user/admin/students');
+    return fetchWithAuth("/user/admin/students");
   },
 
-  updateUserRole: async (userId: string, role: string) => {
-    return fetchWithAuth('/user/admin/update-role', {
-      method: 'POST',
-      body: JSON.stringify({ userId, role })
+  updateUserRole: async (userId, role) => {
+    return fetchWithAuth("/user/admin/update-role", {
+      method: "POST",
+      body: JSON.stringify({ userId, role }),
     });
-  }
+  },
 };
 
 export const JobService = {
   // Backend: router.route("/get").get(isAuthenticated, getAllJobs);
-  getAllJobs: async (keyword: string = '') => {
+  getAllJobs: async (keyword = "") => {
     return fetchWithAuth(`/job/get?keyword=${keyword}`);
   },
 
   // Backend: router.route("/get/:id").get(isAuthenticated, getJobById);
-  getJobById: async (id: string) => {
+  getJobById: async (id) => {
     return fetchWithAuth(`/job/get/${id}`);
   },
 
   // Backend: router.route("/getAdmin").get(isAuthenticated, getAdminJobs);
   getAdminJobs: async () => {
-    return fetchWithAuth('/job/getAdmin');
+    return fetchWithAuth("/job/getAdmin");
   },
 
   // Backend: router.route("/register").post(isAuthenticated, postJob);
-  postJob: async (jobData: any) => {
-    return fetchWithAuth('/job/register', {
-      method: 'POST',
+  postJob: async (jobData) => {
+    return fetchWithAuth("/job/register", {
+      method: "POST",
       body: jobData instanceof FormData ? jobData : JSON.stringify(jobData),
     });
   },
 
   getCompanyJobs: async () => {
-    return fetchWithAuth('/job/getCompany');
+    return fetchWithAuth("/job/getCompany");
   },
 
-  getJobApplicants: async (jobId: string) => {
+  getJobApplicants: async (jobId) => {
     return fetchWithAuth(`/job/getApplicants/${jobId}`);
   },
 
-  updateJob: async (id: string, jobData: any) => {
+  updateJob: async (id, jobData) => {
     return fetchWithAuth(`/job/update/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(jobData),
     });
   },
 
-  deleteJob: async (id: string) => {
+  deleteJob: async (id) => {
     return fetchWithAuth(`/job/delete/${id}`, {
-      method: 'DELETE'
+      method: "DELETE",
     });
-  }
+  },
 };
 
 export const ApplicationService = {
   // Backend: router.route("/apply/:id").get(isAuthenticated, applyJob);
-  applyJob: async (jobIdOrData: string | FormData, jobIdIfData?: string) => {
+  applyJob: async (jobIdOrData, jobIdIfData) => {
     try {
       if (jobIdOrData instanceof FormData) {
         const id = jobIdIfData;
         const response = await fetchWithAuth(`/application/apply/${id}`, {
-          method: 'POST',
-          body: jobIdOrData
+          method: "POST",
+          body: jobIdOrData,
         });
         return response;
       } else {
         // For backward compatibility
-        return fetchWithAuth(`/application/apply/${jobIdOrData}`, { method: 'POST' });
+        return fetchWithAuth(`/application/apply/${jobIdOrData}`, {
+          method: "POST",
+        });
       }
-    } catch (error: any) {
-      return { success: false, message: 'An error occurred' };
+    } catch (error) {
+      return { success: false, message: "An error occurred" };
     }
   },
 
   // Backend: router.route("/applied").get(isAuthenticated, getAppliedJobs);
   getAppliedJobs: async () => {
-    return fetchWithAuth('/application/applied');
+    return fetchWithAuth("/application/applied");
   },
 
   // Backend: router.route("/applicants/:id").get(isAuthenticated, getApplicants);
-  getApplicants: async (jobId: string) => {
+  getApplicants: async (jobId) => {
     return fetchWithAuth(`/application/applicants/${jobId}`);
   },
 
   // Backend: router.route("/status/:id/update").post(isAuthenticated, updateApplicationStatus);
-  updateStatus: async (applicationId: string, status: string) => {
+  updateStatus: async (applicationId, status) => {
     return fetchWithAuth(`/application/status/${applicationId}/update`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ status }),
     });
   },
 
   getPlacementCount: async () => {
-    return fetchWithAuth('/application/getPlacementCount');
+    return fetchWithAuth("/application/getPlacementCount");
   },
 
-  downloadExcel: async (jobId: string) => {
+  downloadExcel: async (jobId) => {
     // We cannot use fetchWithAuth directly because it expects JSON.
     // We need to handle blob response.
     try {
-      const response = await fetch(`/api/v1/application/download-excel/${jobId}`, {
-        headers: {
-          // 'Content-Type': 'application/json', // Do NOT set content type for download request
+      const response = await fetch(
+        `/api/v1/application/download-excel/${jobId}`,
+        {
+          headers: {
+            // 'Content-Type': 'application/json', // Do NOT set content type for download request
+          },
+          credentials: "include",
         },
-        credentials: 'include'
-      });
+      );
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
         a.download = `applicants-${jobId}.xlsx`;
         document.body.appendChild(a);
@@ -234,15 +245,18 @@ export const ApplicationService = {
     }
   },
 
-  downloadAttendanceSheet: async (jobId: string) => {
+  downloadAttendanceSheet: async (jobId) => {
     try {
-      const response = await fetch(`/api/v1/application/download-attendance/${jobId}`, {
-        credentials: 'include'
-      });
+      const response = await fetch(
+        `/api/v1/application/download-attendance/${jobId}`,
+        {
+          credentials: "include",
+        },
+      );
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
         a.download = `attendance-${jobId}.xlsx`;
         document.body.appendChild(a);
@@ -260,24 +274,24 @@ export const ApplicationService = {
         console.error("Download failed", message);
         alert(message);
       }
-    } catch (e: any) {
+    } catch (e) {
       console.error(e);
       alert("An error occurred while downloading the attendance sheet.");
     }
-  }
+  },
 };
 
 export const CompanyService = {
   // Backend: router.route("/register").post(isAuthenticated, registerCompany);
-  register: async (companyData: any) => {
-    return fetchWithAuth('/company/register', {
-      method: 'POST',
+  register: async (companyData) => {
+    return fetchWithAuth("/company/register", {
+      method: "POST",
       body: JSON.stringify(companyData),
     });
   },
 
   // Backend: router.route("/get").get(isAuthenticated, getCompanies);
   getAll: async () => {
-    return fetchWithAuth('/company/get');
-  }
+    return fetchWithAuth("/company/get");
+  },
 };

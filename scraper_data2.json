@@ -1,0 +1,49 @@
+{
+  "team": [
+    {
+      "name": "",
+      "linkedin": "https://www.linkedin.com/company/pccoe-pune?trk=biz-companies-cym",
+      "image": "https://mca.pccoepune.com/pccoehf/img/pccoe_facebook_social_icon.png"
+    },
+    {
+      "name": "Shreyashkar Mishra",
+      "linkedin": "https://www.linkedin.com/in/shreyashkar-mishra/",
+      "image": "https://mca.pccoepune.com/assets/img/team/shreyashka-mishra.jpg"
+    },
+    {
+      "name": "Chirag Gajare",
+      "linkedin": "https://www.linkedin.com/in/chiraggajare/",
+      "image": "https://mca.pccoepune.com/assets/img/team/chirag-gajare.jpg"
+    },
+    {
+      "name": "Ansh Gupta",
+      "linkedin": "https://www.linkedin.com/in/ansh1gupta/",
+      "image": "https://mca.pccoepune.com/assets/img/team/ansh-gupta.jpg"
+    },
+    {
+      "name": "Rohan Paramanand",
+      "linkedin": "https://www.linkedin.com/in/rohan-paramanand/",
+      "image": "https://mca.pccoepune.com/assets/img/team/rohan-paramanad.jpg"
+    },
+    {
+      "name": "Swati Sharma",
+      "linkedin": "https://www.linkedin.com/in/swati--sharma/",
+      "image": "https://mca.pccoepune.com/assets/img/team/swati-sharm.jpeg"
+    },
+    {
+      "name": "Najmunnisa Jamadar",
+      "linkedin": "https://www.linkedin.com/in/najmunnisa-jamadar-1a526a304/",
+      "image": "https://mca.pccoepune.com/assets/img/team/najmunnisa-jamadar.jpg"
+    },
+    {
+      "name": "Sohel Shaikh",
+      "linkedin": "https://www.linkedin.com/in/sohel-shaikh-9978a3355/",
+      "image": "https://mca.pccoepune.com/assets/img/team/sohel-shaikh.jpg"
+    },
+    {
+      "name": "Bhakti Agrawal",
+      "linkedin": "https://www.linkedin.com/in/bhakti-agrawal-776197263/",
+      "image": "https://mca.pccoepune.com/assets/img/team/bhakti-agrawal.jpg"
+    }
+  ]
+}

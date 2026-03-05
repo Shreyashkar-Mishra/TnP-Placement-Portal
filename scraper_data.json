@@ -1,0 +1,20 @@
+{
+  "team": [
+    {
+      "name": "Shreyashkar Mishra",
+      "image": "https://mca.pccoepune.com/assets/img/team/shreyashka-mishra.jpg",
+      "linkedin": "mailto:shreyashkar.mishra25@pccoepune.org"
+    },
+    {
+      "name": "Chirag Gajare",
+      "image": "https://mca.pccoepune.com/assets/img/team/chirag-gajare.jpg",
+      "linkedin": "mailto:chirag.gajare25@pccoepune.org"
+    },
+    {
+      "name": "Bhakti Agrawal",
+      "image": "https://mca.pccoepune.com/assets/img/team/bhakti-agrawal.jpg",
+      "linkedin": "mailto:bhakti.agrawal25@pccoepune.org"
+    }
+  ],
+  "tpo_img": "https://mca.pccoepune.com/assets\\img\\staff\\R. C. Sangole.jpg"
+}

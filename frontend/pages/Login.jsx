@@ -1,31 +1,42 @@
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { AuthService } from "../services/api";
+import { UserRole } from "../types";
+import {
+  AlertCircle,
+  Lock,
+  Mail,
+  Loader2,
+  User,
+  ShieldCheck,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { AuthService } from '../services/api';
-import { UserRole } from '../types';
-import { AlertCircle, Lock, Mail, Loader2, User, ShieldCheck, GraduationCap } from 'lucide-react';
-
-export const Login: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<UserRole>(UserRole.Student);
+export const Login = () => {
+  const [activeTab, setActiveTab] = useState(UserRole.Student);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
       // NOTE: Make sure your backend login controller returns the user object!
-      const response = await AuthService.login(formData.email, formData.password, activeTab);
+      const response = await AuthService.login(
+        formData.email,
+        formData.password,
+        activeTab,
+      );
 
       console.log("Login Response:", response);
 
@@ -33,35 +44,37 @@ export const Login: React.FC = () => {
         // If backend sends user in response (Recommended)
         if (response.user) {
           login(response.user);
-          if (response.user.roles.includes('company')) {
-            navigate('/company/dashboard');
+          if (response.user.roles.includes("company")) {
+            navigate("/company/dashboard");
           } else {
-            navigate('/dashboard');
+            navigate("/dashboard");
           }
         }
         // Fallback: If backend only sends success:true but no user object,
-        // we might manually reconstruct it or fetch profile. 
+        // we might manually reconstruct it or fetch profile.
         // Ideally, update backend to send `user`.
         else {
           // Temporary fallback for testing if backend isn't updated yet
           login({
-            _id: 'temp_id',
-            name: 'User',
+            _id: "temp_id",
+            name: "User",
             email: formData.email,
-            phoneNumber: '',
-            roles: [activeTab]
+            phoneNumber: "",
+            roles: [activeTab],
           });
           if (activeTab === UserRole.Company) {
-            navigate('/company/dashboard');
+            navigate("/company/dashboard");
           } else {
-            navigate('/dashboard');
+            navigate("/dashboard");
           }
         }
       } else {
-        setError(response.message || 'Login failed. Please check your credentials.');
+        setError(
+          response.message || "Login failed. Please check your credentials.",
+        );
       }
     } catch (err) {
-      setError('An unexpected error occurred. Is the backend server running?');
+      setError("An unexpected error occurred. Is the backend server running?");
     } finally {
       setLoading(false);
     }
@@ -69,32 +82,48 @@ export const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Image */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-blue-900">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
-            alt="College Campus"
-            className="w-full h-full object-cover opacity-30"
-          />
-        </div>
-        <div className="relative z-10 w-full flex flex-col justify-center px-12 text-white">
-          <GraduationCap className="h-16 w-16 mb-6 text-yellow-500" />
-          <h1 className="text-4xl font-serif font-bold mb-4">Welcome to the PCCoE MCA Placement Portal</h1>
+      {/* Left Side - Pattern */}
+      <motion.div
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="hidden lg:flex lg:w-1/2 relative bg-[#0a192f] border-r-4 border-yellow-500 overflow-hidden">
+        {/* Classy Corporate Background Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+        <div className="absolute top-1/4 left-1/4 h-[400px] w-[400px] rounded-full bg-blue-600 opacity-20 blur-[100px] pointer-events-none"></div>
+        <div className="absolute bottom-0 right-0 -mr-20 -mb-20 h-[300px] w-[300px] rounded-full bg-yellow-500 opacity-10 blur-[100px] pointer-events-none"></div>
+
+        <div className="relative z-10 w-full flex flex-col justify-center px-12 text-white mt-16">
+          <div className="flex items-center space-x-4 mb-8">
+            <img src="/pcet-logo.png" alt="PCET Logo" className="h-20 w-auto object-contain bg-white p-1.5 rounded-lg shadow-lg" />
+            <div className="h-16 border-l-2 border-yellow-500 mx-2"></div>
+            <img src="/pccoe-logo-new.png" alt="PCCoE Logo" className="h-24 w-auto object-contain bg-white p-1.5 rounded-lg shadow-lg" />
+          </div>
+          <h1 className="text-4xl font-serif font-bold mb-4">
+            Welcome to the PCCoE MCA Placement Portal
+          </h1>
           <p className="text-lg text-blue-100 leading-relaxed">
-            The official centralized platform for campus recruitment activities. Students and recruiters can manage their processes efficiently and securely.
+            The official centralized platform for campus recruitment activities.
+            Students and recruiters can manage their processes efficiently and
+            securely.
           </p>
           <div className="mt-12 pt-12 border-t border-blue-700">
             <p className="text-sm text-blue-300">
               Need assistance? Contact the TPO cell at <br />
-              <span className="font-semibold text-white">rajkamal.sangole@pccoepune.org</span>
+              <span className="font-semibold text-white">
+                rajkamal.sangole@pccoepune.org
+              </span>
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Right Side - Login Form */}
-      <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 bg-gray-50">
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 bg-gray-50">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div className="text-center lg:text-left mb-10">
             <h2 className="mt-6 text-3xl font-serif font-bold text-gray-900">
@@ -109,34 +138,62 @@ export const Login: React.FC = () => {
             {/* Role Tabs */}
             <div className="flex mb-6 bg-gray-100 p-1 rounded-md">
               <button
-                onClick={() => { setActiveTab(UserRole.Student); setError(null); }}
+                onClick={() => {
+                  setActiveTab(UserRole.Student);
+                  setError(null);
+                }}
                 className={`flex-1 py-2 text-sm font-medium rounded-md flex items-center justify-center transition-all ${activeTab === UserRole.Student
-                  ? 'bg-white text-blue-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? "bg-white text-blue-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
                   }`}
               >
                 <User className="w-4 h-4 mr-2" />
                 Student
               </button>
               <button
-                onClick={() => { setActiveTab(UserRole.Admin); setError(null); }}
+                onClick={() => {
+                  setActiveTab(UserRole.Admin);
+                  setError(null);
+                }}
                 className={`flex-1 py-2 text-sm font-medium rounded-md flex items-center justify-center transition-all ${activeTab === UserRole.Admin
-                  ? 'bg-white text-blue-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? "bg-white text-blue-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
                   }`}
               >
                 <ShieldCheck className="w-4 h-4 mr-2" />
                 Admin
               </button>
               <button
-                onClick={() => { setActiveTab(UserRole.Company); setError(null); }}
+                onClick={() => {
+                  setActiveTab(UserRole.Company);
+                  setError(null);
+                }}
                 className={`flex-1 py-2 text-sm font-medium rounded-md flex items-center justify-center transition-all ${activeTab === UserRole.Company
-                  ? 'bg-white text-blue-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? "bg-white text-blue-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
                   }`}
               >
-                <div className='flex items-center'>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-building-2 mr-2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /><path d="M10 6h4" /><path d="M10 10h4" /><path d="M10 14h4" /><path d="M10 18h4" /></svg>
+                <div className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-building-2 mr-2"
+                  >
+                    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+                    <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+                    <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+                    <path d="M10 6h4" />
+                    <path d="M10 10h4" />
+                    <path d="M10 14h4" />
+                    <path d="M10 18h4" />
+                  </svg>
                   Company
                 </div>
               </button>
@@ -157,8 +214,13 @@ export const Login: React.FC = () => {
 
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  {activeTab === UserRole.Student ? 'Institute Email ID' : 'Administrative Email'}
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {activeTab === UserRole.Student
+                    ? "Institute Email ID"
+                    : "Administrative Email"}
                 </label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -172,13 +234,18 @@ export const Login: React.FC = () => {
                     required
                     className="focus:ring-blue-900 focus:border-blue-900 block w-full pl-10 sm:text-sm border-gray-300 rounded-md h-10 border"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Password
                 </label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -193,7 +260,9 @@ export const Login: React.FC = () => {
                     required
                     className="focus:ring-blue-900 focus:border-blue-900 block w-full pl-10 sm:text-sm border-gray-300 rounded-md h-10 border"
                     value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -206,13 +275,20 @@ export const Login: React.FC = () => {
                     type="checkbox"
                     className="h-4 w-4 text-blue-900 focus:ring-blue-900 border-gray-300 rounded"
                   />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-gray-900"
+                  >
                     Remember me
                   </label>
                 </div>
 
                 <div className="text-sm">
-                  <Link to="/forgot-password" className="font-medium text-blue-900 hover:text-blue-800 underline">
+                  <Link
+                    to="/forgot-password"
+                    className="font-medium text-blue-900 hover:text-blue-800 underline"
+                  >
                     Forgot password?
                   </Link>
                 </div>
@@ -224,7 +300,11 @@ export const Login: React.FC = () => {
                   disabled={loading}
                   className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-sm shadow-sm text-sm font-medium text-white bg-blue-900 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900 disabled:opacity-50 transition-colors uppercase tracking-wide"
                 >
-                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Secure Login'}
+                  {loading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    "Secure Login"
+                  )}
                 </button>
               </div>
             </form>
@@ -252,7 +332,7 @@ export const Login: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
