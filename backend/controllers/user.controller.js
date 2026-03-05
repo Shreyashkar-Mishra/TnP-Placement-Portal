@@ -36,11 +36,11 @@ export const sendOtp = async (req, res) => {
     const sent = await sendOtpEmail(trimmedEmail, otp);
     if (!sent.success) {
       console.error("Failed to send OTP email:", sent.error);
-      // Allow proceeding even if email fails (for dev/wifi issues), user can check terminal
-      return res.status(200).json({ message: "OTP generated. Check server logs if email not received.", success: true });
+      // Because Render Free tier blocks outbound SMTP ports, bypass email delivery for demo purposes
+      return res.status(200).json({ message: `[Free Host Block] Your OTP is: ${otp}`, success: true });
     }
 
-    return res.status(200).json({ message: "OTP sent successfully", success: true });
+    return res.status(200).json({ message: `OTP successfully sent to ${trimmedEmail}`, success: true });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error", success: false });
@@ -156,7 +156,12 @@ export const login = async (req, res) => {
       roles: user.roles,
       college: user.college
     }
-    return res.status(200).cookie('token', token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' }).json({ message: 'Login succesful', success: true, user: user });
+    return res.status(200).cookie('token', token, {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true
+    }).json({ message: 'Login succesful', success: true, user: user });
 
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
@@ -166,7 +171,12 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   // Logout logic here
   try {
-    return res.status(200).cookie('token', '', { maxAge: 0 }).json({ message: 'Logout successful', success: true });
+    return res.status(200).cookie('token', '', {
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true
+    }).json({ message: 'Logout successful', success: true });
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
   }
