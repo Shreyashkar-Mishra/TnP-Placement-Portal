@@ -44,6 +44,16 @@ app.use('/api/v1/job', jobRoutes);
 
 app.use('/api/v1/application', applicationRoutes);
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(`[SERVER ERROR] ${err.stack}`);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+});
+
 app.get('/', (req, res) => {
   res.send("API is running...");
 });

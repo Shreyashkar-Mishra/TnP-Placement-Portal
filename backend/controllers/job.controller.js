@@ -28,7 +28,6 @@ export const postJob = async (req, res) => {
     const {
       title,
       description,
-      educationRequirements,
       location,
       salary,
       position,
@@ -37,6 +36,18 @@ export const postJob = async (req, res) => {
       jobType,
       workMode
     } = req.body;
+
+    let educationRequirements = req.body.educationRequirements;
+    // Handle flattened FormData keys from frontend if educationRequirements is missing as an object
+    if (!educationRequirements && req.body['educationRequirements[tenthPercent]']) {
+      educationRequirements = {
+        tenthPercent: Number(req.body['educationRequirements[tenthPercent]']),
+        twelfthPercent: Number(req.body['educationRequirements[twelfthPercent]']),
+        bachelorsPercent: Number(req.body['educationRequirements[bachelorsPercent]']),
+        mastersPercent: req.body['educationRequirements[mastersPercent]'] ? Number(req.body['educationRequirements[mastersPercent]']) : undefined,
+        maxBacklogs: Number(req.body['educationRequirements[maxBacklogs]'] || 0)
+      };
+    }
 
     const userId = req.user;
 

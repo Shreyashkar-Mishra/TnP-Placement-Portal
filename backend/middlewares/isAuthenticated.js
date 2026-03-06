@@ -12,8 +12,9 @@ const isAuthenticated = async (req, res, next) => {
         }
         req.user = decoded.id;
         next();
-    } catch {
-        console.log(error);
+    } catch (error) {
+        console.log(`[AUTH ERROR] ${error.message}`);
+        return res.status(401).json({ message: 'Unauthorized: Token verification failed', success: false });
     }
 }
 export default isAuthenticated;
