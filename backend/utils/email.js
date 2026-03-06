@@ -8,11 +8,16 @@ dotenv.config();
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
-    secure: true, // Use SSL to bypass Render outbound SMTP blocks
+    secure: true, // Use SSL
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS?.replace(/\s+/g, '') // Remove spaces from App Password
-    }
+    },
+    // STRICT TIMEOUTS: Vercel kills requests after 10s. Render blocks SMTP.
+    // We must fail fast (3s) so the user gets the OTP fallback in the UI.
+    connectionTimeout: 3000,
+    greetingTimeout: 3000,
+    socketTimeout: 3000,
 });
 
 export const sendOtpEmail = async (email, otp) => {
